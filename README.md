@@ -1,4 +1,4 @@
-## **``Liver_Disease_Data_Analysis`**
+## **``Liver_Disease_Data_Analysis``**
 
 #### **This repository contains the code components of work carried out for analyzing the Indian Liver Patients with the intent to find the hidden patterns or external factors that can leads to Liver Ailment.**
 
@@ -25,9 +25,10 @@ Any patient whose age exceeded 89 is listed as being of age "90".
 
 ### **``Acknowledgements``**
 This dataset was downloaded from the UCI ML Repository:
-Lichman, M. (2013). UCI Machine Learning Repository [http://archive.ics.uci.edu/ml]. Irvine, CA: University of California, School of Information and Computer Science.
+Lichman, M. (2013) Irvine, CA: University of California, School of Information and Computer Science.
 
 ### **``Knowledge building flowcharts``**
 ![Flow_Diag](Knowledge_Doc/Flow_Diagram.PNG)
 
 ### **``Some Visualization Results``**
+![Vis_Results](Results/Visualization_Results.gif)
