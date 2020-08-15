@@ -1,7 +1,5 @@
 ## **``Liver_Disease_Data_Analysis``**
 
-#### **This repository contains the code components of work carried out for analyzing the Indian Liver Patients with the intent to find the hidden patterns or external factors that can leads to Liver Ailment.**
-
 ### **``Dataset Context``**
 Patients with Liver disease have been continuously increasing because of excessive consumption of alcohol, inhale of harmful gases, intake of contaminated food, pickles and drugs. This dataset was used to evaluate prediction algorithms in an effort to reduce burden on doctors.
 
