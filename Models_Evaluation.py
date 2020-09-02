@@ -23,7 +23,9 @@ from sklearn.model_selection import StratifiedKFold, StratifiedShuffleSplit
 from sklearn.model_selection import GridSearchCV
 
 ## Import the Estimators
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier, ExtraTreesClassifier
+from xgboost import XGBRFClassifier, XGBClassifier
+from sklearn.linear_model import LogisticRegression
 
 from yellowbrick.classifier import confusion_matrix as conf_matrix
 
@@ -42,7 +44,7 @@ import xgboost
 
 pre_proc_df = pd.read_csv(os.path.join('Cleaned_Trans_Scaled_Features.csv'))
 
-# y_0 = np.zeros(167)
+# y_0 = np.zeros(230)
 # y_1 = np.ones(416)
 # classes = [0,1]
 # y = np.concatenate([y_0,y_1])
@@ -50,15 +52,15 @@ pre_proc_df = pd.read_csv(os.path.join('Cleaned_Trans_Scaled_Features.csv'))
 # print(cw)
 # print(cw/2.11)
 
-cv_dataset, unseen_dataset = ttd(pre_proc_df,train_size=0.80,test_size=0.20,random_state=44)
+cv_dataset, unseen_dataset = ttd(pre_proc_df,train_size=0.80,test_size=0.20,random_state=91)
 
 # cv_dataset_upsampled = upsample(cv_dataset,minority_label=0,random_state=19)
-# rfc_model = xgboost.XGBClassifier()
-rfc_model = RandomForestClassifier(n_estimators=25,
+# rfc_model = RandomForestClassifier()
+rfc_model = RandomForestClassifier(n_estimators=25,random_state=34,
                                     max_depth=16,
                                     min_samples_split=2,
-                                    class_weight={0:0.83,1:0.33},
-                                    min_samples_leaf=1,
+                                    # class_weight={0:0.66,1:0.37},
+                                    min_samples_leaf=2,
                                     max_features='auto')
 # rfc = RandomForestClassifier(n_estimators=25,max_depth=16,min_samples_split=3,min_samples_leaf=1,max_features='sqrt')
 # skf = StratifiedKFold(n_splits=10)
@@ -70,8 +72,8 @@ rfc_model = RandomForestClassifier(n_estimators=25,
     
 # print(cross_val_score(estimator=rfc_model,X=cv_dataset.iloc[:,0:-1],y=cv_dataset.iloc[:,-1],scoring='recall',cv=cvk).mean())
 
-# estimators = [15,20,25,30,35]
-# max_depth = [4,8,16,32]
+# n_estimators = [20,25,30,35,40,45,50,75]
+# max_depth = [4,8,16,32,64]
 # min_samples_split = [2,3,4,5]
 # min_samples_leaf = [1,2,3,4]
 # max_features = ['auto','sqrt','log2']
@@ -103,23 +105,23 @@ print(recall_score(unseen_dataset.iloc[:,-1],y_pred))
 
 print(confusion_matrix(unseen_dataset.iloc[:,-1],y_pred))
 
-visualizer = conf_matrix(rfc_model, X_train=cv_dataset.iloc[:,0:-1],
-                         y_train=cv_dataset.iloc[:,-1],
-                         X_test=unseen_dataset.iloc[:,0:-1], y_test=unseen_dataset.iloc[:,-1], cmap="Greens")
+# visualizer = conf_matrix(rfc_model, X_train=cv_dataset.iloc[:,0:-1],
+#                          y_train=cv_dataset.iloc[:,-1],
+#                          X_test=unseen_dataset.iloc[:,0:-1], y_test=unseen_dataset.iloc[:,-1], cmap="Greens")
 
 # roc_rfc = ROCAUC(rfc_model)
 # roc_rfc.fit(cv_dataset.iloc[:,0:-1],cv_dataset.iloc[:,-1])
 # roc_rfc.predict()
 # roc_rfc.show()
-# cv = StratifiedShuffleSplit(n_splits=100, test_size=0.20, random_state=0)
 
+# cv = StratifiedShuffleSplit(n_splits=100, test_size=0.20, random_state=0)
 # from sklearn.model_selection import validation_curve
 # train_scores, test_scores = validation_curve(estimator=rfc_model,
 #                                               X=cv_dataset.iloc[:,0:-1], 
 #                                               y=cv_dataset.iloc[:,-1],
 #                                               param_name='max_features',
 #                                               param_range=max_features,
-#                                               cv=cv,scoring='f1')
+#                                               cv=cv,scoring='recall')
 
 # # Calculate mean and standard deviation for training set scores
 # train_mean = np.mean(train_scores, axis=1)
@@ -140,7 +142,7 @@ visualizer = conf_matrix(rfc_model, X_train=cv_dataset.iloc[:,0:-1],
 # # Create plot
 # plt.title("Validation Curve With Random Forest")
 # plt.xlabel("max_features")
-# plt.ylabel("F1 Score")
+# plt.ylabel("recall Score")
 # plt.tight_layout()
 # plt.legend(loc="best")
 # plt.show()

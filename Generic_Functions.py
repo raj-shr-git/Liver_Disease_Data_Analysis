@@ -11,9 +11,67 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.model_selection import StratifiedKFold, StratifiedShuffleSplit
 from sklearn.model_selection import learning_curve
+from sklearn.preprocessing import normalize
+from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler
 
 ## Data Sampling Package
 from sklearn.utils import resample
+
+def inspect_feature(df_obj,feature_name,scaler):
+    """
+    This function is created for plotting the histograms and box-plots.
+
+    Parameters
+    ----------
+    df_obj : DataFrame
+        Containing feature that needs to be inspected.
+    feature_name : str
+        Feature that you want to inspect
+    scaler : str, optional
+        DESCRIPTION. The default is 'ss'.
+
+    Returns
+    -------
+    None.
+    """
+    if scaler == 'ss':
+        scaler_obj = StandardScaler()
+    elif scaler =='mm':
+        scaler_obj = MinMaxScaler()
+    elif scaler =='rb':
+        scaler_obj = RobustScaler()
+    
+    with plt.style.context('seaborn'):
+        df_obj[feature_name].plot(kind='hist')
+        plt.title('Raw Data')
+        plt.show()
+        df_obj[feature_name].plot(kind='box')
+        plt.title('Raw Data')
+        plt.show()
+        np.log1p(df_obj[feature_name]).plot(kind='hist')
+        plt.title('Log1p Data')
+        plt.show()
+        np.log1p(df_obj[feature_name]).plot(kind='box')
+        plt.title('Log1p Data')
+        plt.show()  
+        pd.DataFrame(scaler_obj.fit_transform(pd.DataFrame(np.log1p(df_obj[feature_name])))).plot(kind='hist')
+        plt.title('Scaled Log1p Data')
+        plt.show()
+        pd.DataFrame(scaler_obj.fit_transform(pd.DataFrame(np.log1p(df_obj[feature_name])))).plot(kind='box')
+        plt.title('Scaled Log1p Data')
+        plt.show()
+        np.sqrt(np.log1p(df_obj[feature_name])).plot(kind='hist')
+        plt.title('Sqrt Log1p Data')
+        plt.show()
+        np.sqrt(np.log1p(df_obj[feature_name])).plot(kind='box')
+        plt.title('Sqrt Log1p Data')
+        plt.show()
+        pd.DataFrame(scaler_obj.fit_transform(pd.DataFrame(np.sqrt(np.log1p(df_obj[feature_name]))))).plot(kind='hist')
+        plt.title('Scaled Sqrt Log1p Data')
+        plt.show()
+        pd.DataFrame(scaler_obj.fit_transform(pd.DataFrame(np.sqrt(np.log1p(df_obj[feature_name]))))).plot(kind='box')
+        plt.title('Scaled Sqrt Log1p Data')
+        plt.show()
 
 def val_iqr_limits(df_name,col_name,w_width=None):
     """
@@ -238,7 +296,7 @@ def plot_learning_curve(estimator, title, X, y, axes=None, ylim=None, cv=None,
 
     train_sizes, train_scores, test_scores, fit_times, _ = \
         learning_curve(estimator, X, y, cv=cv, n_jobs=n_jobs,
-                       train_sizes=train_sizes,scoring='f1',
+                       train_sizes=train_sizes,scoring='recall',
                        return_times=True)
     train_scores_mean = np.mean(train_scores, axis=1)
     train_scores_std = np.std(train_scores, axis=1)
