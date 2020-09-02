@@ -120,7 +120,7 @@ class feature_standardizing:
         elif self.scaler =='rb':
             scaler_obj = RobustScaler()
         elif self.scaler =='log':
-            scaler_obj = np.log
+            scaler_obj = np.log1p
     
         if self.scaler !='log':
             scaled_X = pd.DataFrame(scaler_obj.fit_transform(self.X))
@@ -156,7 +156,7 @@ if __name__ == "__main__":
     cleaned_X = cleaned_df[['Age','Total_Bilirubin','Alkaline_Phosphotase','Total_Protiens','Albumin_and_Globulin_Ratio','AST_ALT_Ratio']]
     cleaned_y = cleaned_df.iloc[:,-1]
        
-    scale_feat = feature_standardizing(cleaned_X,trans='pt')
+    scale_feat = feature_standardizing(cleaned_X,scaler='log')
     # cleaned_scaled_X = scale_feat.scale_norm()
     cleaned_trans_X = scale_feat.feat_trans()
     
@@ -165,9 +165,9 @@ if __name__ == "__main__":
     # scale_feat2 = feature_standardizing(cleaned_trans_X,scaler='mm')
     # cleaned_trans_scaled_X = scale_feat2.scale_norm()
     
-    for col in cleaned_trans_X.columns:
-        Tuky_IQR.fix_outliers(df_name = cleaned_trans_X,col_name=col,whis_width=1.5)
-    Tuky_IQR.plot_data(cleaned_trans_X)
+    # for col in cleaned_trans_X.columns:
+    #     Tuky_IQR.fix_outliers(df_name = cleaned_trans_X,col_name=col,whis_width=1.5)
+    # Tuky_IQR.plot_data(cleaned_trans_X)
     
     cleaned_trans_scaled = pd.concat([cleaned_trans_X,cleaned_df[['Gender_0','Gender_1','Label']]],axis=1)
     
