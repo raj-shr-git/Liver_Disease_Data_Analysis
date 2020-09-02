@@ -14,11 +14,12 @@ import seaborn as sns
 ## Import Generic Datasplit Package
 from Generic_Functions import train_test_datasets as ttd
 from Generic_Functions import minority_upsampling as upsample
+from Generic_Functions import plot_learning_curve as plc
 
 ## Cross validation Packages
 from sklearn.model_selection import train_test_split as tts
 from sklearn.model_selection import cross_val_score, cross_validate
-from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import StratifiedKFold, StratifiedShuffleSplit
 from sklearn.model_selection import GridSearchCV
 
 ## Import the Estimators
@@ -34,27 +35,47 @@ from yellowbrick import ROCAUC
 import warnings
 warnings.filterwarnings("ignore")
 
+from sklearn.utils import compute_class_weight
+from sklearn.ensemble import BaggingClassifier
+from imblearn.over_sampling import SMOTE
+import xgboost
+
 pre_proc_df = pd.read_csv(os.path.join('Cleaned_Trans_Scaled_Features.csv'))
 
-cv_dataset, unseen_dataset = ttd(pre_proc_df,train_size=0.85,test_size=0.15,random_state=0)
+# y_0 = np.zeros(167)
+# y_1 = np.ones(416)
+# classes = [0,1]
+# y = np.concatenate([y_0,y_1])
+# cw = compute_class_weight('balanced',classes,y)
+# print(cw)
+# print(cw/2.11)
 
-cv_dataset_upsampled = upsample(cv_dataset,minority_label=0,random_state=0)
+cv_dataset, unseen_dataset = ttd(pre_proc_df,train_size=0.80,test_size=0.20,random_state=44)
 
-# rfc = RandomForestClassifier()
+# cv_dataset_upsampled = upsample(cv_dataset,minority_label=0,random_state=19)
+# rfc_model = xgboost.XGBClassifier()
+rfc_model = RandomForestClassifier(n_estimators=25,
+                                    max_depth=16,
+                                    min_samples_split=2,
+                                    class_weight={0:0.83,1:0.33},
+                                    min_samples_leaf=1,
+                                    max_features='auto')
 # rfc = RandomForestClassifier(n_estimators=25,max_depth=16,min_samples_split=3,min_samples_leaf=1,max_features='sqrt')
 # skf = StratifiedKFold(n_splits=10)
+# cvk = StratifiedShuffleSplit(n_splits=10, test_size=0.20, random_state=0)
 
-# print(cross_val_score(estimator=rfc,X=cv_dataset_upsampled.iloc[:,0:-1],y=cv_dataset_upsampled.iloc[:,-1],scoring='f1',cv=skf).mean())
+# print(cross_val_score(estimator=rfc_model,X=cv_dataset.iloc[:,0:-1],y=cv_dataset.iloc[:,-1],scoring='f1',cv=cvk).mean())
 
-# print(cross_val_score(estimator=rfc,X=cv_dataset_upsampled.iloc[:,0:-1],y=cv_dataset_upsampled.iloc[:,-1],scoring='precision',cv=skf).mean())
+# print(cross_val_score(estimator=rfc_model,X=cv_dataset.iloc[:,0:-1],y=cv_dataset.iloc[:,-1],scoring='precision',cv=cvk).mean())
     
-# print(cross_val_score(estimator=rfc,X=cv_dataset_upsampled.iloc[:,0:-1],y=cv_dataset_upsampled.iloc[:,-1],scoring='recall',cv=skf).mean())
+# print(cross_val_score(estimator=rfc_model,X=cv_dataset.iloc[:,0:-1],y=cv_dataset.iloc[:,-1],scoring='recall',cv=cvk).mean())
 
 # estimators = [15,20,25,30,35]
 # max_depth = [4,8,16,32]
 # min_samples_split = [2,3,4,5]
 # min_samples_leaf = [1,2,3,4]
 # max_features = ['auto','sqrt','log2']
+# max_leaf_nodes = [1,2]
 
 # param_grid = dict(n_estimators=estimators, max_depth=max_depth, min_samples_split=min_samples_split, min_samples_leaf=min_samples_leaf, max_features=max_features)
 
@@ -64,9 +85,13 @@ cv_dataset_upsampled = upsample(cv_dataset,minority_label=0,random_state=0)
 
 # pd.DataFrame(grid.cv_results_).to_csv('HP_results.csv')
 
-rfc_model = RandomForestClassifier(n_estimators=25,max_depth=16,min_samples_split=3,min_samples_leaf=1,max_features='sqrt',random_state=0)
+# print(cross_val_score(estimator=rfc_model,X=cv_dataset.iloc[:,0:-1],y=cv_dataset.iloc[:,-1],scoring='f1',cv=cv).mean())
 
-rfc_model.fit(cv_dataset_upsampled.iloc[:,0:-1],cv_dataset_upsampled.iloc[:,-1])
+# print(cross_val_score(estimator=rfc_model,X=cv_dataset.iloc[:,0:-1],y=cv_dataset.iloc[:,-1],scoring='precision',cv=cv).mean())
+    
+# print(cross_val_score(estimator=rfc_model,X=cv_dataset.iloc[:,0:-1],y=cv_dataset.iloc[:,-1],scoring='recall',cv=cv).mean())
+
+rfc_model.fit(cv_dataset.iloc[:,0:-1],cv_dataset.iloc[:,-1])
 
 y_pred = rfc_model.predict(unseen_dataset.iloc[:,0:-1])
  
@@ -78,4 +103,52 @@ print(recall_score(unseen_dataset.iloc[:,-1],y_pred))
 
 print(confusion_matrix(unseen_dataset.iloc[:,-1],y_pred))
 
-# visualizer = conf_matrix(rfc_model, X_train=dX_train, y_train=dy_train, X_test=dX_test, y_test=dy_test, cmap="Greens")
+visualizer = conf_matrix(rfc_model, X_train=cv_dataset.iloc[:,0:-1],
+                         y_train=cv_dataset.iloc[:,-1],
+                         X_test=unseen_dataset.iloc[:,0:-1], y_test=unseen_dataset.iloc[:,-1], cmap="Greens")
+
+# roc_rfc = ROCAUC(rfc_model)
+# roc_rfc.fit(cv_dataset.iloc[:,0:-1],cv_dataset.iloc[:,-1])
+# roc_rfc.predict()
+# roc_rfc.show()
+# cv = StratifiedShuffleSplit(n_splits=100, test_size=0.20, random_state=0)
+
+# from sklearn.model_selection import validation_curve
+# train_scores, test_scores = validation_curve(estimator=rfc_model,
+#                                               X=cv_dataset.iloc[:,0:-1], 
+#                                               y=cv_dataset.iloc[:,-1],
+#                                               param_name='max_features',
+#                                               param_range=max_features,
+#                                               cv=cv,scoring='f1')
+
+# # Calculate mean and standard deviation for training set scores
+# train_mean = np.mean(train_scores, axis=1)
+# train_std = np.std(train_scores, axis=1)
+
+# # Calculate mean and standard deviation for test set scores
+# test_mean = np.mean(test_scores, axis=1)
+# test_std = np.std(test_scores, axis=1)
+
+# # Plot mean accuracy scores for training and test sets
+# plt.plot(max_features, train_mean, label="Training score", color="black")
+# plt.plot(max_features, test_mean, label="Cross-validation score", color="dimgrey")
+
+# # Plot accurancy bands for training and test sets
+# plt.fill_between(max_features, train_mean - train_std, train_mean + train_std, color="gray")
+# plt.fill_between(max_features, test_mean - test_std, test_mean + test_std, color="gainsboro")
+
+# # Create plot
+# plt.title("Validation Curve With Random Forest")
+# plt.xlabel("max_features")
+# plt.ylabel("F1 Score")
+# plt.tight_layout()
+# plt.legend(loc="best")
+# plt.show()
+
+# fig, axes = plt.subplots(3, 2, figsize=(10, 15))
+# plc(rfc_model,"Learning Curves for RF",X=cv_dataset.iloc[:,0:-1], y=cv_dataset.iloc[:,-1],
+#     axes=axes[:, 0], ylim=(0.5, 1.01),cv=cv, n_jobs=-1)
+# plt.show()
+
+
+

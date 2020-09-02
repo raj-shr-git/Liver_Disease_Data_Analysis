@@ -17,6 +17,7 @@ import seaborn as sns
 
 ## Feature Scaling and Normalizing Packages
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler, normalize, QuantileTransformer, PowerTransformer
+from sklearn.preprocessing import normalize
 
 ## Data Sampling Package
 from sklearn.utils import resample
@@ -159,13 +160,15 @@ if __name__ == "__main__":
     # cleaned_scaled_X = scale_feat.scale_norm()
     cleaned_trans_X = scale_feat.feat_trans()
     
-    scale_feat2 = feature_standardizing(cleaned_trans_X,scaler='mm')
-    cleaned_trans_scaled_X = scale_feat2.scale_norm()
+    cleaned_trans_X = pd.DataFrame(normalize(cleaned_trans_X,norm='l2',axis=1))
     
-    for col in cleaned_trans_scaled_X.columns:
-        Tuky_IQR.fix_outliers(df_name = cleaned_trans_scaled_X,col_name=col,whis_width=1.5)
-    Tuky_IQR.plot_data(cleaned_trans_scaled_X)
+    # scale_feat2 = feature_standardizing(cleaned_trans_X,scaler='mm')
+    # cleaned_trans_scaled_X = scale_feat2.scale_norm()
     
-    cleaned_trans_scaled = pd.concat([cleaned_trans_scaled_X,cleaned_df[['Gender_0','Gender_1','Label']]],axis=1)
+    for col in cleaned_trans_X.columns:
+        Tuky_IQR.fix_outliers(df_name = cleaned_trans_X,col_name=col,whis_width=1.5)
+    Tuky_IQR.plot_data(cleaned_trans_X)
+    
+    cleaned_trans_scaled = pd.concat([cleaned_trans_X,cleaned_df[['Gender_0','Gender_1','Label']]],axis=1)
     
     cleaned_trans_scaled.to_csv(os.path.join('Cleaned_Trans_Scaled_Features.csv'),index=False)
