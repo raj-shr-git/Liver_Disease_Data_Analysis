@@ -1,1 +1,1 @@
-sh setup.sh && streamlit run Liver-Health-Analyzer-App.py
+streamlit run Liver-Health-Analyzer-App.py
