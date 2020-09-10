@@ -29,4 +29,4 @@ Lichman, M. (2013) Irvine, CA: University of California, School of Information a
 ![Flow_Diag](Knowledge_Doc/Flow_Diagram.PNG)
 
 ### **``Some Visualization Results``**
-![Vis_Results](Output/Data Visualization/Visualization_Results.gif)
+![Vis_Results](Output/Data_Visualization/Visualization_Results.gif)
