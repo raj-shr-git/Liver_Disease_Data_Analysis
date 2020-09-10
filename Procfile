@@ -1,1 +1,1 @@
-streamlit run Liver-Health-Analyzer-App.py
+py streamlit run Liver-Health-Analyzer-App.py
