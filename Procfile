@@ -1,0 +1,1 @@
+sh setup.sh && streamlit run /Scripts/Liver_Health_Analyzer_App.py
