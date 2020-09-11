@@ -64,7 +64,7 @@ def data_pre_process(df_obj1,df_obj2,model_file_name="Liver_Patient_Model.pkl"):
     df_obj['Gender'] = df_obj['Gender'].apply(lambda val: gender[val])
 
     # Load the Model from pickle file
-    with open(os.path.join("../Output/Model/",model_file_name), 'rb') as file:  
+    with open(os.path.join(model_file_name), 'rb') as file:  
         Pickled_RF_Model = pickle.load(file)
     
     df_obj = df_obj[['Age','Total Bilirubin','ALP','ALT','AST','AST_ALT_Ratio','Protiens',
