@@ -28,13 +28,13 @@ def user_inputs():
                                 min_value=0.0,max_value=200.0,step=0.1,value=0.5)
     
     alp = st.sidebar.slider("Alkaline Phosphotase level (iU/L)",
-                    min_value=0.0,max_value=2000.0,step=0.1,value=65.0)
+                    min_value=0.0,max_value=1200.0,step=0.1,value=65.0)
     
     alt = st.sidebar.slider("Alanine Aminotransferase level (iU/L)"
-                    ,min_value=0.0,max_value=2000.0,step=0.1,value=10.0)
+                    ,min_value=0.0,max_value=1200.0,step=0.1,value=10.0)
     
     ast = st.sidebar.slider("Aspartate Aminotransferase level (iU/L)",
-                    min_value=0.0,max_value=2000.0,step=0.1,value=10.0)
+                    min_value=0.0,max_value=1200.0,step=0.1,value=10.0)
     
     total_protiens = st.sidebar.slider("Total Protiens level (iU/L)",
                     min_value=0.0,max_value=200.0,step=0.1,value=3.0)
